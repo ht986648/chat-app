@@ -3,7 +3,7 @@ import './App.css';
 
 function App() {
   const [messages, setMessage] = useState(['hi there', 'how are you']);
-  const wsRef = useRef(null);
+  const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
     const ws = new WebSocket('ws://localhost:8080');
@@ -36,24 +36,25 @@ function App() {
       <div>
         <div>
           {messages.map((message, index) => (
-            
             <div key={index}>{message}</div>
-            
           ))}
         </div>
         <div>
           <input id="message" type="text" />
           <button
             onClick={() => {
-              const message = document.getElementById('message')?.value;
-              wsRef.current.send(
-                JSON.stringify({
-                  type: 'chat',
-                  payload: {
-                    message: message,
-                  },
-                })
-              );
+              const messageInput = document.getElementById('message') as HTMLInputElement;
+              const message = messageInput.value;
+              if (wsRef.current) {
+                wsRef.current.send(
+                  JSON.stringify({
+                    type: 'chat',
+                    payload: {
+                      message: message,
+                    },
+                  })
+                );
+              }
             }}
           >
             send message
